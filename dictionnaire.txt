@@ -1,0 +1,10 @@
+bonjour
+secret
+admin
+password
+azerty
+root
+123456
+qwerty
+shadow
+esp2026
