@@ -27,7 +27,7 @@ public class BruteForceHashCracker implements HashCracker {
         // Condition d'arrêt : la chaîne générée a atteint la longueur ciblée
         if (current.length() == targetLength) {
             // Comparaison avec le hash recherché
-            if (hashMD5(current).equals(targetHash)) {
+            if (calculateMD5(current).equals(targetHash)) {
                 return current;
             }
             return null;
@@ -41,29 +41,5 @@ public class BruteForceHashCracker implements HashCracker {
             }
         }
         return null;
-    }
-
-    /**
-     * Fonction utilitaire pour calculer le hash MD5 d'une chaîne de caractères.
-     */
-    private String hashMD5(String input) {
-        try {
-            MessageDigest md = MessageDigest.getInstance("MD5");
-            byte[] messageDigest = md.digest(input.getBytes());
-
-            // Conversion des bytes en chaîne hexadécimale
-            StringBuilder hexString = new StringBuilder();
-            for (byte b : messageDigest) {
-                String hex = Integer.toHexString(0xff & b);
-                if (hex.length() == 1) {
-                    hexString.append('0');
-                }
-                hexString.append(hex);
-            }
-            return hexString.toString();
-
-        } catch (NoSuchAlgorithmException e) {
-            throw new RuntimeException("Erreur : Algorithme MD5 introuvable", e);
-        }
     }
 }
