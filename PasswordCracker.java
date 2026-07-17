@@ -12,7 +12,6 @@ public class PasswordCracker {
             }
         }
 
-        // Vérification de la présence des paramètres obligatoires
         if (method == null || hash == null) {
             System.out.println("Usage : passwordCracker -m <BRUTE|DICO> -h <hash_md5>");
             return;
@@ -28,14 +27,12 @@ public class PasswordCracker {
 
             long endTime = System.currentTimeMillis();
 
-            // 4. Affichage du résultat selon le format attendu
             if (result != null) {
                 System.out.println("Password found: " + result);
             } else {
                 System.out.println("Password not found");
             }
 
-            // Affichage d'une information pertinente supplémentaire
             System.out.println("Temps d'exécution : " + (endTime - startTime) + " ms");
 
         } catch (IllegalArgumentException e) {
