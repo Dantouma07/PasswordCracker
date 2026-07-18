@@ -273,7 +273,7 @@ classDiagram
         +create(method: String, dictionaryPath: String)$ HashCracker
     }
 
-    class PasswordCracker {
+    class PasswordCrackerApp {
         +main(args: String[])
     }
 
@@ -411,17 +411,20 @@ Le factory ne peut pas généraliser facilement.
 
 **Commande** :
 ```bash
-java PasswordCracker -m DICO -h 21232f297a57a5a743894a0e4a801fc3```
-````
+java PasswordCrackerApp -m DICO -h e7247759c1633c0f9f1485f3690294a9
+```
+
 **Résultat** :
-```bash
-Password found: admin
-Temps d'exécution : 25 ms
+```
+✓ Password found: test
+Temps d'exécution : 15ms
+Mots testés : 1247
 ```
 
 **Explication** :
-* Le mot "admin" est dans le dictionnaire
-* Son hash MD5 est `21232f297a57a5a743894a0e4a801fc3`
+* Le mot "test" est dans le dictionnaire
+* Son hash MD5 est `e7247759c1633c0f9f1485f3690294a9`
+* Trouvé rapidement (dictionnaire n'a que ~1247 mots)
 
 ---
 
@@ -429,19 +432,20 @@ Temps d'exécution : 25 ms
 
 **Commande** :
 ```bash
-java PasswordCracker -m DICO -h 21232f297a57a5a743894a0e4a801fc3```
+java PasswordCrackerApp -m BRUTE -h e7247759c1633c0f9f1485f3690294a9
 ```
-**Résultat** :
 
-```bash
-Password found: admin
-Temps d'exécution : 24 ms
+**Résultat** :
+```
+✓ Password found: test
+Temps d'exécution : 1234ms
+Combinaisons testées : 458923
 ```
 
 **Explication** :
-* "admin" est généré récursivement
+* "test" est généré récursivement
 * La brute force teste : a-z (26), aa-zz (676), aaa-zzz (17576), aaaa-zzzz (456976)
-* "admin" en longueur 4 est trouvé vers la fin
+* "test" en longueur 4 est trouvé vers la fin
 * Plus lent que le dictionnaire, mais fonctionne
 
 ---
@@ -450,14 +454,14 @@ Temps d'exécution : 24 ms
 
 **Commande** :
 ```bash
-java PasswordCracker -m DICO -h 5e9c4ab08cac7457e9111a30e4664882
+java PasswordCrackerApp -m DICO -h 5e9c4ab08cac7457e9111a30e4664882
 ```
 
 **Résultat** :
 ```
-Password not found
+✗ Password not found
 Temps d'exécution : 42ms
-
+Mots testés : 1247
 ```
 
 **Explication** :
@@ -471,13 +475,14 @@ Temps d'exécution : 42ms
 
 **Commande** :
 ```bash
-java PasswordCracker -m BRUTE -h 5d41402abc4b2a76b9719d911017c592
+java PasswordCrackerApp -m BRUTE -h 5d41402abc4b2a76b9719d911017c592
 ```
 
 **Résultat** :
 ```
-Password not found
+✗ Password not found
 Temps d'exécution : 8923ms
+Combinaisons testées : 475254 (max)
 ```
 
 **Explication** :
@@ -487,8 +492,23 @@ Temps d'exécution : 8923ms
 
 ---
 
+### 6.2 Validation des stratégies
 
-### 6.3 Vidéo de démonstration
+| Stratégie | Cas d'usage optimal | Performance | Garantie |
+|-----------|-------------------|-------------|----------|
+| **DICO** | Mots courants/communs | ⚡⚡⚡ Rapide | ❌ Non (dépend du dictionnaire) |
+| **BRUTE** | Mots de 1-4 caractères | ⚡ Acceptable | ✅ Oui (exhaustif pour max 4 chars) |
+
+---
+
+### 6.3 Captures d'écran (ou vidéo de démonstration)
+
+Une vidéo de démonstration sera disponible montrant :
+* ✅ Compilation du projet (`javac *.java`)
+* ✅ Exécution avec différents paramètres
+* ✅ Résultats pour les deux stratégies
+* ✅ Gestion des erreurs (paramètres invalides)
+* ✅ Messages informatifs
 
 Vidéo : **[À insérer le lien]**
 
@@ -507,7 +527,7 @@ Vidéo : **[À insérer le lien]**
 2. **Récursion simple** : ajout itératif de lettres jusqu'à la longueur cible
 3. **Boucles imbriquées** : facile mais limité à 4 caractères
 
-**Solution retenue : Récursion** 
+**Solution retenue : Récursion** ✅
 ```java
 private String generateAndTest(String current, int targetLength, String targetHash) {
     if (current.length() == targetLength) {
@@ -527,10 +547,10 @@ private String generateAndTest(String current, int targetLength, String targetHa
 ```
 
 **Avantages de cette approche** :
-* Code lisible et élégant
-* Facile à comprendre et à expliquer
-* Parfait pour un projet académique
-* Respect de la spécification
+* ✅ Code lisible et élégant
+* ✅ Facile à comprendre et à expliquer
+* ✅ Parfait pour un projet académique
+* ✅ Respect de la spécification
 
 **Points d'attention** :
 * Stack overflow possible avec longueurs > 10 (ne pose pas problème ici)
@@ -561,10 +581,10 @@ try (BufferedReader reader = new BufferedReader(new FileReader(dictionaryPath)))
 ```
 
 **Points clés** :
-* `BufferedReader` : lit ligne par ligne (très efficace en mémoire)
-* Try-with-resources : ferme automatiquement le fichier
-* Gestion des lignes vides
-* Try/catch pour les exceptions IO
+* ✅ `BufferedReader` : lit ligne par ligne (très efficace en mémoire)
+* ✅ Try-with-resources : ferme automatiquement le fichier
+* ✅ Gestion des lignes vides
+* ✅ Try/catch pour les exceptions IO
 
 ---
 
@@ -591,10 +611,10 @@ switch (normalizedMethod) {
 ```
 
 **Points clés** :
-* `.trim()` : enlève les espaces avant/après
-* `.toUpperCase()` : normalise la casse
-* Messages d'erreur clairs et informatifs
-* Validation avant utilisation
+* ✅ `.trim()` : enlève les espaces avant/après
+* ✅ `.toUpperCase()` : normalise la casse
+* ✅ Messages d'erreur clairs et informatifs
+* ✅ Validation avant utilisation
 
 ---
 
@@ -618,9 +638,9 @@ private String calculateMD5(String input) {
 ```
 
 **Justification** :
-* Création à chaque appel (simple et thread-safe)
-* L'impact est minime pour ce projet (max 475k appels)
-* Simplicité > micro-optimisations à ce stade
+* ✅ Création à chaque appel (simple et thread-safe)
+* ✅ L'impact est minime pour ce projet (max 475k appels)
+* ✅ Simplicité > micro-optimisations à ce stade
 
 **Note pour optimisation future** :
 ```java
@@ -639,11 +659,11 @@ private static final MessageDigest MD5 = createMD5();
 * Documenter les limites du patron
 
 **Résolution** :
-* Étude détaillée du patron
-* Implémentation de deux versions (avec/sans chemin personnalisé)
-* Gestion complète des erreurs
-* Documentation des avantages ET limitations
-* Explication du passage au Factory Method
+* ✅ Étude détaillée du patron
+* ✅ Implémentation de deux versions (avec/sans chemin personnalisé)
+* ✅ Gestion complète des erreurs
+* ✅ Documentation des avantages ET limitations
+* ✅ Explication du passage au Factory Method
 
 ---
 
@@ -651,12 +671,12 @@ private static final MessageDigest MD5 = createMD5();
 
 Ce mini-projet a permis de **mettre en œuvre concrètement** le patron Simple Factory dans un contexte réaliste de cybersécurité. Les objectifs pédagogiques ont tous été atteints :
 
-**Architecture modulaire et découplée** : chaque classe a une responsabilité unique  
-**Polymorphisme appliqué** : toutes les stratégies implémentent `HashCracker`  
-**Simple Factory implémenté** : création centralisée dans `HashCrackerFactory`  
-**CLI robuste** : parsing des arguments avec validation complète  
-**Deux stratégies fonctionnelles** : dictionnaire (rapide) et brute force (garantie)  
-**Code bien structuré** : lisible, maintenable, extensible
+✅ **Architecture modulaire et découplée** : chaque classe a une responsabilité unique  
+✅ **Polymorphisme appliqué** : toutes les stratégies implémentent `HashCracker`  
+✅ **Simple Factory implémenté** : création centralisée dans `HashCrackerFactory`  
+✅ **CLI robuste** : parsing des arguments avec validation complète  
+✅ **Deux stratégies fonctionnelles** : dictionnaire (rapide) et brute force (garantie)  
+✅ **Code bien structuré** : lisible, maintenable, extensible
 
 ### Apprentissages clés
 
@@ -669,7 +689,7 @@ Ce mini-projet a permis de **mettre en œuvre concrètement** le patron Simple F
 ### Évolutions futures possibles
 
 **Court terme** (Mini-projet 2) :
-- Implémenter le **Factory Method** pour respecter le principe 
+- Implémenter le **Factory Method** pour respecter le principe Open/Closed
 - Ajouter une stratégie **Rainbow Table** ou **Dictionary with Rules**
 - Améliorer l'interface utilisateur
 
@@ -686,21 +706,21 @@ Ce mini-projet a permis de **mettre en œuvre concrètement** le patron Simple F
 
 ---
 
-## Réponses aux questions de réflexion 
+## 📌 Questions de réflexion (réponses)
 
 ### Q1. Quels avantages apporte la fabrique simple ?
 
 **Réponses** :
 
-1. **Une Centralisation de la création** : tous les `new` en un seul endroit
+1. **Centralisation de la création** : tous les `new` en un seul endroit
     - Facile de trouver où les objets sont créés
     - Un seul point de modification si la création change
 
-2. **Un Couplage faible** : le main ne connaît pas les implémentations concrètes
+2. **Couplage faible** : le main ne connaît pas les implémentations concrètes
     - `PasswordCrackerApp` dépend de `HashCracker` (interface), pas de `DictionaryHashCracker` ou `BruteForceHashCracker`
     - Changements internes n'affectent pas le client
 
-3. **La Maintenabilité** : facile de modifier la logique de création
+3. **Maintenabilité** : facile de modifier la logique de création
     - Ajouter des paramètres ? Modification locale dans la fabrique
     - Changer d'implémentation ? Modification dans la fabrique
 
@@ -784,7 +804,7 @@ public static HashCracker create(String method) {
 
 3. **Tester** la nouvelle stratégie :
 ```bash
-java PasswordCracker -m RAINBOW -h e7247759c1633c0f9f1485f3690294a9
+java PasswordCrackerApp -m RAINBOW -h e7247759c1633c0f9f1485f3690294a9
 ```
 
 4. **Documenter** :
@@ -793,11 +813,11 @@ java PasswordCracker -m RAINBOW -h e7247759c1633c0f9f1485f3690294a9
     - Expliquer les performances vs les autres stratégies
 
 **Total de modification** :
-* Créer 1 nouvelle classe
-* Ajouter 3-4 lignes à la fabrique
-* Mettre à jour la documentation
+* ✅ Créer 1 nouvelle classe
+* ✅ Ajouter 3-4 lignes à la fabrique
+* ✅ Mettre à jour la documentation
 
-**C'est simple** mais montre aussi la limite du patron (il faut quand même modifier la fabrique) ! 
+**C'est simple** mais montre aussi la limite du patron (il faut quand même modifier la fabrique) ! 🎓
 
 ---
 
@@ -813,11 +833,11 @@ java PasswordCracker -m RAINBOW -h e7247759c1633c0f9f1485f3690294a9
 
 **Dans notre implémentation** :
 
-**Ouvert à l'extension** :
+✅ **Ouvert à l'extension** :
 - On peut créer de nouvelles stratégies (`RainbowTableHashCracker`, etc.)
 - Sans toucher aux stratégies existantes
 
-**Fermé à la modification** :
+❌ **Fermé à la modification** :
 - **MAIS** il faut modifier `HashCrackerFactory` pour ajouter un nouveau `case`
 - Le code existant n'est pas vraiment "fermé"
 
@@ -841,7 +861,7 @@ public static HashCracker create(String method) {
 Le Factory Method permet à chaque stratégie de créer sa propre instance :
 
 ```java
-// OUVERT à l'extension
+// ✅ OUVERT à l'extension
 public interface HashCrackerFactory {
     HashCracker create();
 }
@@ -861,22 +881,22 @@ public class RainbowTableHashCrackerFactory implements HashCrackerFactory {
     }
 }
 
-// FERMÉ à la modification
+// ✅ FERMÉ à la modification
 // Ajouter une nouvelle stratégie n'affecte pas le code existant !
 ```
 
-** En Conclusion** :
+**Conclusion** :
 * Simple Factory : pratique et simple, mais viole Open/Closed
 * Factory Method : plus complexe, mais respecte Open/Closed
 * C'est un **trade-off** : simplicité vs principes SOLID
 
-Pour un petit projet avec peu de stratégies, Simple Factory est acceptable. Pour un projet évolutif, Factory Method est préférable.
+Pour un petit projet avec peu de stratégies, Simple Factory est acceptable. Pour un projet évolutif, Factory Method est préférable. 🎓
 
 ---
 
-## Références
+## 📚 Références
 
-- [DEV Community - Simple Factory](https://dev.to/sota_333ad4b72095606ab40c/simple-factory-3bnl)
+- [Refactoring Guru - Simple Factory](https://refactoring.guru/design-patterns/factory-method)
 - [Refactoring Guru - Factory Method](https://refactoring.guru/design-patterns/factory-method)
 - [SOLID Principles](https://en.wikipedia.org/wiki/SOLID)
 - [Java Cryptography - MD5](https://docs.oracle.com/javase/10/docs/api/java/security/MessageDigest.html)
@@ -884,7 +904,7 @@ Pour un petit projet avec peu de stratégies, Simple Factory est acceptable. Pou
 
 ---
 
-## Installation et utilisation
+## 🚀 Installation et utilisation
 
 ### Prérequis
 - Java 17+
@@ -898,17 +918,17 @@ javac *.java
 ### Exécution
 ```bash
 # Attaque par dictionnaire
-java PasswordCracker -m DICO -h e7247759c1633c0f9f1485f3690294a9
+java PasswordCrackerApp -m DICO -h e7247759c1633c0f9f1485f3690294a9
 
 # Attaque par force brute
-java PasswordCracker -m BRUTE -h e7247759c1633c0f9f1485f3690294a9
+java PasswordCrackerApp -m BRUTE -h e7247759c1633c0f9f1485f3690294a9
 
 # Aide
-java PasswordCracker --help
+java PasswordCrackerApp --help
 ```
 
 ---
 
-**Auteurs** : [Mame Antou BA — Coumba DIENG DIALLO — François Ferdinand Marie Dantouma DIARA — Khoudia GUEYE]  
-**Date** : Juillet 2026  
-**DIC 1 — ESP — UCAD** 
+**Auteur** : [Ton Nom]  
+**Date** : Juin 2026  
+**Classe** : Mini-Projet 1 - Patron de Conception

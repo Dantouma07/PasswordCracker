@@ -49,28 +49,4 @@ public class DictionaryHashCracker implements HashCracker {
         return null;  // Aucun mot ne correspond
     }
 
-    /**
-     * Calcule le hash MD5 d'une chaîne
-     * @param input la chaîne à hasher
-     * @return le hash MD5 en hexadécimal
-     */
-    private String calculateMD5(String input) {
-        try {
-            MessageDigest md = MessageDigest.getInstance("MD5");
-            byte[] messageDigest = md.digest(input.getBytes());
-
-            // Convertir les bytes en hexadécimal
-            StringBuilder hexString = new StringBuilder();
-            for (byte b : messageDigest) {
-                String hex = Integer.toHexString(0xff & b);
-                if (hex.length() == 1) {
-                    hexString.append('0');
-                }
-                hexString.append(hex);
-            }
-            return hexString.toString();
-        } catch (NoSuchAlgorithmException e) {
-            throw new RuntimeException("MD5 algorithm not found", e);
-        }
-    }
 }
